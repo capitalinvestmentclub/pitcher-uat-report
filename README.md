@@ -25,3 +25,7 @@ Search/filter/sort state is encoded in shareable URLs. Existing `#PIT-F001`-styl
 The evidence selector and finding drawer share the finding-specific `visualEvidence` mapping in `data.js`. F008 has applicant/creator comparison images; F010 configuration readback; F012 negative spend; F021 holder readback; F033 voting-table layout. Each caption records the original capture time and limits of what the image proves. Findings without published images display an explicit empty state and never inherit another finding's image. The selected finding persists in the `evidence` URL parameter. Original test results are unchanged.
 
 Publication and updates target Capital Investment Club only. The former wase932 Pages URL returns 404; its repository address redirects to the transferred CIC repository and must not be used for deletion.
+
+## Execution revision 4 — 19:35 UTC
+
+Added one-hour sprint observations and findings F037–F041. F028 now includes fresh nonzero grant balance after refund. Ten original images map to nine findings; new images were individually reviewed before publication. Scope reach is 210/210 scenario-size pairs with some inspection, not whole journeys: all 35 scenarios and 210 whole-journey size cells remain incomplete. Historical zoom/crop qualifications remain. Product actions used real Chrome only; report DOM tests are report bookkeeping, not application test substitutes.

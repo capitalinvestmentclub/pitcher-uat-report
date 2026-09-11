@@ -26,8 +26,8 @@ function setup(query='',updates={}){
   return {dom,w,d,$,all,input};
 }
 test('matching dashboard structure, unchanged data and no sample findings',()=>{
- const x=setup();assert.equal(x.all('.finding-row').length,36);assert.equal(x.all('#scenarios tr').length,35);assert.equal(x.all('.cells span').length,210);
- assert.equal(x.$('#metric-urgent').textContent,'13');assert.equal(x.$('#metric-fixed').textContent,'0');assert.ok(html.startsWith('<!doctype html>'));
+ const x=setup();assert.equal(x.all('.finding-row').length,41);assert.equal(x.all('#scenarios tr').length,35);assert.equal(x.all('.cells span').length,210);
+ assert.equal(x.$('#metric-urgent').textContent,'15');assert.equal(x.$('#metric-fixed').textContent,'0');assert.ok(html.startsWith('<!doctype html>'));
  assert.ok(!html.includes('truncated output'));assert.ok(!x.d.body.textContent.includes('ASS-003'));assert.equal(x.$('dialog').getAttribute('aria-labelledby'),'dialog-title');x.dom.window.close();
 });
 test('evidence selection switches both surfaces, preserves deep links and never substitutes unrelated images',()=>{
@@ -59,13 +59,13 @@ test('search, every filter option, combinations, empty recovery and every sort',
    const t=x.$(`input[name=type][value="${type}"]`),s=x.$(`input[name=severity][value="${severity}"]`);t.click();s.click();
    assert.ok(x.all('.finding-row').every(r=>r.dataset.type===type&&r.dataset.severity===severity));s.click();t.click();
  }
- for(const sort of ['severity','id','scenario','status']){x.input('#sort',sort);assert.equal(x.all('.finding-row').length,36);assert.equal(x.$('#sort').value,sort);}
- x.input('#search','no such finding');assert.equal(x.$('#empty-state').hidden,false);x.$('#clear-filters').click();assert.equal(x.all('.finding-row').length,36);x.dom.window.close();
+ for(const sort of ['severity','id','scenario','status']){x.input('#sort',sort);assert.equal(x.all('.finding-row').length,41);assert.equal(x.$('#sort').value,sort);}
+ x.input('#search','no such finding');assert.equal(x.$('#empty-state').hidden,false);x.$('#clear-filters').click();assert.equal(x.all('.finding-row').length,41);x.dom.window.close();
 });
 test('metric filters and URL hydration, malformed values, refresh, deep links',()=>{
- for(const [metric,count] of [['all',36],['urgent',13],['open',36],['fixed',0],['closed',0]]){const x=setup();x.$(`[data-metric-filter=${metric}]`).click();assert.equal(x.all('.finding-row').length,count);const y=setup(x.w.location.search);assert.equal(y.all('.finding-row').length,count);x.dom.window.close();y.dom.window.close();}
+ for(const [metric,count] of [['all',41],['urgent',15],['open',41],['fixed',0],['closed',0]]){const x=setup();x.$(`[data-metric-filter=${metric}]`).click();assert.equal(x.all('.finding-row').length,count);const y=setup(x.w.location.search);assert.equal(y.all('.finding-row').length,count);x.dom.window.close();y.dom.window.close();}
  const x=setup('?q=grant&type=Defect&severity=High&status=Open&sort=scenario#PIT-F008');assert.ok(x.$('dialog').open);assert.match(x.$('#dialog-title').textContent,/custom answers/);assert.ok(x.all('.finding-row').length>0);x.dom.window.close();
- const y=setup('?sort=__proto__&severity=bogus&type=unknown&status=unknown#unknown');assert.equal(y.all('.finding-row').length,36);assert.equal(y.$('#sort').value,'severity');assert.equal(y.$('dialog').open,false);y.dom.window.close();
+ const y=setup('?sort=__proto__&severity=bogus&type=unknown&status=unknown#unknown');assert.equal(y.all('.finding-row').length,41);assert.equal(y.$('#sort').value,'severity');assert.equal(y.$('dialog').open,false);y.dom.window.close();
 });
 test('all detail drawers, close/backdrop/Escape/hash and keyboard focus',()=>{
  const x=setup();for(const row of x.all('.finding-row')){row.click();assert.ok(x.$('dialog').open);assert.match(x.$('#dialog-content').textContent,/Reproduction/);x.$('#dialog-close').click();assert.equal(x.w.location.hash,'');}
