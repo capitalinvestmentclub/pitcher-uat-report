@@ -9,7 +9,7 @@ window.PR_REVIEW_DATA = {
     visuals: report.visualEvidence['PIT-F'+String(i+1).padStart(3,'0')] || []
   }))
 };
-document.getElementById('scenarios').innerHTML=report.scenarios.map(([n,title,done,todo])=>`<tr id="scenario-${n}"><td>${pit(n)}<br>${escapeText(title)}<br><span class="history">PARTIAL · ${n<=6?'Reused eligible prior run':'Current run + appendices'}</span></td><td>${escapeText(done)}</td><td>${escapeText(todo)}</td><td><div class="cells">${report.sizes.map(s=>`<span>${s} · incomplete</span>`).join('')}</div></td></tr>`).join('');
+document.getElementById('scenarios').innerHTML=report.scenarios.map(([n,title,done,todo])=>`<tr id="scenario-${n}"><td>${pit(n)}<br>${escapeText(title)}<br><span class="history">PARTIAL · ${[1,4].includes(n)?'Reused eligible prior run':'Current run + appendices'}</span></td><td>${escapeText(done)}</td><td>${escapeText(todo)}</td><td><div class="cells">${report.sizes.map(s=>`<span>${s} · incomplete</span>`).join('')}</div></td></tr>`).join('');
 document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>`<article><h3>${escapeText(title)}</h3><small>${escapeText(scope)}</small><p>${escapeText(body)}</p></article>`).join('');
 
 (() => {
