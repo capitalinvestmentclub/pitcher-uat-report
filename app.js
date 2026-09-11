@@ -1,14 +1,454 @@
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pit = n => `PIT-${String(n).padStart(3,'0')}`;
-$('revision').textContent = `${report.version} · Evidence checkpoint ${report.cutoff}`;
-$('findingCount').textContent=report.findings.length;
-$('highCount').textContent=report.findings.filter(f=>['Critical','High'].includes(f[0])).length;
-$('scenarios').innerHTML=report.scenarios.map(([n,title,done,todo])=>`<tr id="scenario-${n}"><td>${pit(n)}<br>${esc(title)}<br><span class="history">PARTIAL · ${n<=6?'Reused eligible prior run':'Current run + appendices'}</span></td><td>${esc(done)}</td><td>${esc(todo)}</td><td><div class="cells">${report.sizes.map(s=>`<span>${s} · incomplete</span>`).join('')}</div></td></tr>`).join('');
-$('gaps').innerHTML=report.gaps.map(([title,scope,body])=>`<article><h3>${esc(title)}</h3><small>${esc(scope)}</small><p>${esc(body)}</p></article>`).join('');
-function filtered(){const q=$('search').value.toLowerCase();return report.findings.map((f,i)=>({f,id:`PIT-F${String(i+1).padStart(3,'0')}`})).filter(({f,id})=>(!$('severity').value||f[0]===$('severity').value)&&(!$('status').value||f[6]===$('status').value)&&`${id} ${f.flat().join(' ')} ${f[1].map(pit).join(' ')}`.toLowerCase().includes(q));}
-function render(){const rows=filtered();$('match').textContent=`${rows.length} of ${report.findings.length} findings shown · Expand any row for details`;$('register').innerHTML=rows.map(({f:[severity,ids,title,steps,actual,expected,status],id})=>`<details id="${id}"><summary><span class="badge ${severity}">${severity}</span><span class="finding-title">${esc(title)}<span class="meta">${id} · ${ids.map(pit).join(' / ')} · ${esc(status)} · Unresolved</span></span></summary><div class="detail"><p><strong>Reproduction / observed path</strong>${esc(steps)}</p><p><strong>Actual result</strong>${esc(actual)}</p><p><strong>Expected result / acceptance</strong>${esc(expected)}</p><p><strong>Provenance</strong>11 September campaign record or eligible reused run. See ${ids.map(n=>`<a href="#scenario-${n}">${pit(n)} scenario</a>`).join(', ')} and private numbered scenario runs/appendices. This public entry is a sanitized consolidation, not the full raw execution log.</p><p><strong>Fix / retest</strong>No fix verified in this publication. Preserve original evidence, record the fix revision, then append independent browser retest results and exact viewport scope.</p><a href="#${id}">Link to finding</a></div></details>`).join('')||'<p>No findings match these filters.</p>';}
-['search','severity','status'].forEach(id=>$(id).addEventListener('input',render));$('reset').onclick=()=>{['search','severity','status'].forEach(id=>$(id).value='');render();};
-const csvCell=s=>'"'+String(s).replace(/"/g,'""')+'"';
-$('export').onclick=()=>{const rows=[['ID','Severity','Scenarios','Title','Reproduction','Actual','Expected','Evidence status','Fix status'],...filtered().map(({f,id})=>[id,f[0],f[1].map(pit).join(' / '),f[2],f[3],f[4],f[5],f[6],'Unresolved; not retested'])];const url=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='pitcher-uat-interim-findings-20260911.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-render();function openHash(){const el=document.getElementById(location.hash.slice(1));if(el?.tagName==='DETAILS')el.open=true;}addEventListener('hashchange',openHash);openHash();
+const pit = n => 'PIT-' + String(n).padStart(3,'0');
+const escapeText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+window.PR_REVIEW_DATA = {
+  meta: {commit:'5fbf4b35cfcfef4aa54b7daec6e3fee0398a0403',generatedAt:'2026-09-11T16:06:00Z',checkpoint:report.cutoff,url:'https://github.com/wase932/pitcher-uat-report'},
+  findings: report.findings.map(([severity,ids,title,steps,description,expected,evidenceStatus],i)=>({
+    id:'PIT-F'+String(i+1).padStart(3,'0'),severity,title,steps,description,expected,evidenceStatus,status:'Open',
+    scenario:ids.map(pit).join(' / '),area:report.scenarios.find(s=>s[0]===ids[0])[1],
+    type:evidenceStatus==='Observed defect'?'Defect':'Question'
+  }))
+};
+document.getElementById('scenarios').innerHTML=report.scenarios.map(([n,title,done,todo])=>`<tr id="scenario-${n}"><td>${pit(n)}<br>${escapeText(title)}<br><span class="history">PARTIAL · ${n<=6?'Reused eligible prior run':'Current run + appendices'}</span></td><td>${escapeText(done)}</td><td>${escapeText(todo)}</td><td><div class="cells">${report.sizes.map(s=>`<span>${s} · incomplete</span>`).join('')}</div></td></tr>`).join('');
+document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>`<article><h3>${escapeText(title)}</h3><small>${escapeText(scope)}</small><p>${escapeText(body)}</p></article>`).join('');
+
+(() => {
+  const report = window.PR_REVIEW_DATA;
+  const updates = window.PR_REVIEW_UPDATES || {};
+  if (!report?.findings) {
+    document.body.innerHTML = '<p role="alert">The generated finding ledger could not be loaded.</p>';
+    return;
+  }
+
+  const findings = report.findings.map((finding) => ({
+    ...finding,
+    ...(updates[finding.id] || {}),
+  }));
+  const elements = {
+    list: document.querySelector('#findings-list'),
+    empty: document.querySelector('#empty-state'),
+    count: document.querySelector('#result-count'),
+    filterCopy: document.querySelector('#active-filter-copy'),
+    search: document.querySelector('#search'),
+    sort: document.querySelector('#sort'),
+    dialog: document.querySelector('#finding-dialog'),
+    dialogKicker: document.querySelector('#dialog-kicker'),
+    dialogTitle: document.querySelector('#dialog-title'),
+    dialogContent: document.querySelector('#dialog-content'),
+    toast: document.querySelector('#toast'),
+  };
+  const state = {
+    search: '',
+    types: new Set(),
+    statuses: new Set(),
+    severities: new Set(),
+    sort: 'severity',
+  };
+
+  const statusBucket = (status = '') => {
+    const value = status.toLowerCase();
+    if (value.startsWith('fixed')) return 'Fixed';
+    if (value.includes('progress')) return 'In progress';
+    if (value.includes('retest')) return 'Needs retest';
+    if (value.startsWith('closed')) return 'Closed';
+    return 'Open';
+  };
+
+  const statusClass = (status) => {
+    const bucket = statusBucket(status);
+    if (bucket === 'Fixed') return 'status-fixed';
+    if (bucket === 'In progress') return 'status-progress';
+    if (bucket === 'Needs retest') return 'status-retest';
+    if (bucket === 'Closed') return 'status-closed';
+    return '';
+  };
+
+  const escapeHtml = (value = '') =>
+    String(value).replace(
+      /[&<>'"]/g,
+      (character) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[
+          character
+        ],
+    );
+
+  const severityWeight = {
+    Critical: 0,
+    Blocker: 1,
+    High: 2,
+    Medium: 3,
+    Low: 4,
+    Info: 5,
+    Unclassified: 6,
+  };
+
+  const idNumber = (finding) => Number(finding.id.match(/\d+/)?.[0] || 0);
+  const comparators = {
+    severity: (a, b) =>
+      severityWeight[a.severity] - severityWeight[b.severity] ||
+      a.type.localeCompare(b.type) ||
+      idNumber(a) - idNumber(b),
+    id: (a, b) => a.type.localeCompare(b.type) || idNumber(a) - idNumber(b),
+    scenario: (a, b) => a.scenario.localeCompare(b.scenario) || idNumber(a) - idNumber(b),
+    status: (a, b) => statusBucket(a.status).localeCompare(statusBucket(b.status)) || idNumber(a) - idNumber(b),
+  };
+
+  function renderMetadata() {
+    const generated = new Date(report.meta.generatedAt);
+    document.querySelector('#metadata').innerHTML = `
+      <span>HEAD ${escapeHtml(report.meta.commit.slice(0, 8))}</span>
+      <span>Evidence ${escapeHtml(report.meta.checkpoint)}</span>
+      <a href="${report.meta.url}">Open report source ↗</a>
+    `;
+  }
+
+  function renderMetrics() {
+    const urgent = findings.filter(
+      (finding) =>
+        ['Critical', 'High'].includes(finding.severity) && statusBucket(finding.status) === 'Open',
+    ).length;
+    const open = findings.filter((finding) => statusBucket(finding.status) === 'Open').length;
+    const fixed = findings.filter((finding) => statusBucket(finding.status) === 'Fixed').length;
+    const closed = findings.filter((finding) => statusBucket(finding.status) === 'Closed').length;
+    document.querySelector('#metric-total').textContent = findings.length;
+    document.querySelector('#metric-urgent').textContent = urgent;
+    document.querySelector('#metric-open').textContent = open;
+    document.querySelector('#metric-fixed').textContent = fixed;
+    document.querySelector('#metric-closed').textContent = closed;
+    document.querySelector('#release-reason').textContent = `${urgent} proposed critical/high findings; 35 scenarios remain partial.`;
+  }
+
+  function optionCounts(property, transform = (value) => value) {
+    return findings.reduce((counts, finding) => {
+      const value = transform(finding[property]);
+      counts[value] = (counts[value] || 0) + 1;
+      return counts;
+    }, {});
+  }
+
+  function renderFilterGroup(containerId, name, counts, selectedSet, preferredOrder) {
+    const container = document.querySelector(`#${containerId}`);
+    const options = Object.keys(counts).sort((a, b) => {
+      const left = preferredOrder.indexOf(a);
+      const right = preferredOrder.indexOf(b);
+      return (left < 0 ? 99 : left) - (right < 0 ? 99 : right) || a.localeCompare(b);
+    });
+    container.innerHTML = options
+      .map(
+        (option) => `
+          <label class="filter-option">
+            <span>
+              <input type="checkbox" name="${name}" value="${escapeHtml(option)}" ${selectedSet.has(option) ? 'checked' : ''} />
+              ${escapeHtml(option)}
+            </span>
+            <output>${counts[option]}</output>
+          </label>
+        `,
+      )
+      .join('');
+    container.querySelectorAll('input').forEach((input) => {
+      input.addEventListener('change', () => {
+        if (input.checked) selectedSet.add(input.value);
+        else selectedSet.delete(input.value);
+        render();
+      });
+    });
+  }
+
+  function renderFilters() {
+    renderFilterGroup(
+      'type-filters',
+      'type',
+      optionCounts('type'),
+      state.types,
+      ['Defect', 'Gap', 'Question'],
+    );
+    renderFilterGroup(
+      'status-filters',
+      'status',
+      optionCounts('status', statusBucket),
+      state.statuses,
+      ['Open', 'In progress', 'Needs retest', 'Fixed', 'Closed'],
+    );
+    renderFilterGroup(
+      'severity-filters',
+      'severity',
+      optionCounts('severity'),
+      state.severities,
+      ['Critical', 'Blocker', 'High', 'Medium', 'Low', 'Info', 'Unclassified'],
+    );
+  }
+
+  function filteredFindings() {
+    const query = state.search.toLowerCase().trim();
+    return findings
+      .filter((finding) => !state.types.size || state.types.has(finding.type))
+      .filter((finding) => !state.statuses.size || state.statuses.has(statusBucket(finding.status)))
+      .filter((finding) => !state.severities.size || state.severities.has(finding.severity))
+      .filter((finding) => {
+        if (!query) return true;
+        return [
+          finding.id,
+          finding.title,
+          finding.description,
+          finding.area,
+          finding.scenario,
+          finding.status,
+        ]
+          .join(' ')
+          .toLowerCase()
+          .includes(query);
+      })
+      .sort(comparators[state.sort]);
+  }
+
+  function activeFilterText() {
+    const parts = [];
+    if (state.search) parts.push(`“${state.search}”`);
+    if (state.types.size) parts.push([...state.types].join(', '));
+    if (state.statuses.size) parts.push([...state.statuses].join(', '));
+    if (state.severities.size) parts.push([...state.severities].join(', '));
+    return parts.length ? parts.join(' · ') : 'Full Pitcher record';
+  }
+
+  function rowTemplate(finding) {
+    return `
+      <button
+        class="finding-row"
+        type="button"
+        data-id="${finding.id}"
+        data-type="${finding.type}"
+        data-severity="${finding.severity}"
+        aria-label="Open ${finding.id}: ${escapeHtml(finding.title)}"
+      >
+        <span class="finding-main">
+          <span class="finding-id">${finding.id}</span>
+          <span>
+            <span class="finding-title">${escapeHtml(finding.title)}</span>
+            <span class="finding-tags">
+              <span class="tag tag-${finding.severity.toLowerCase()}">${finding.severity}</span>
+              <span class="tag">${finding.type}</span>
+            </span>
+          </span>
+        </span>
+        <span class="finding-area">
+          <strong>${finding.scenario}</strong>
+          ${escapeHtml(finding.area)}
+        </span>
+        <span class="status-label ${statusClass(finding.status)}">${escapeHtml(finding.status)}</span>
+      </button>
+    `;
+  }
+
+  function render() {
+    const visible = filteredFindings();
+    elements.list.innerHTML = visible.map(rowTemplate).join('');
+    elements.count.textContent = visible.length;
+    elements.filterCopy.textContent = activeFilterText();
+    elements.empty.hidden = visible.length > 0;
+    elements.list.querySelectorAll('.finding-row').forEach((row) => {
+      row.addEventListener('click', () => openFinding(row.dataset.id));
+    });
+    persistView();
+  }
+
+  function evidenceLink(label, url, note) {
+    if (!url) return '';
+    return `
+      <a class="evidence-link" href="${escapeHtml(url)}" target="_blank" rel="noreferrer">
+        <span><strong>${escapeHtml(label)}</strong><small>${escapeHtml(note)}</small></span>
+        <span aria-hidden="true">↗</span>
+      </a>
+    `;
+  }
+
+  function fixTemplate(finding) {
+    if (!finding.fix && !finding.resolution) return '';
+    const fix = finding.fix || {};
+    const evidence = finding.verificationEvidence || fix.evidence || [];
+    const changes = [
+      fix.summary ? `<li><strong>Summary:</strong> ${escapeHtml(fix.summary)}</li>` : '',
+      fix.commit
+        ? `<li><strong>Commit:</strong> <a href="${escapeHtml(fix.commit.url)}" target="_blank" rel="noreferrer">${escapeHtml(fix.commit.sha || fix.commit.url)}</a></li>`
+        : '',
+      fix.pr
+        ? `<li><strong>Fix PR:</strong> <a href="${escapeHtml(fix.pr.url)}" target="_blank" rel="noreferrer">${escapeHtml(fix.pr.label || fix.pr.url)}</a></li>`
+        : '',
+      ...(fix.files || []).map(
+        (file) => `<li><strong>Changed:</strong> <a href="${escapeHtml(file.url)}" target="_blank" rel="noreferrer">${escapeHtml(file.path)}</a></li>`,
+      ),
+    ].filter(Boolean);
+    return `
+      <section class="detail-section fix-section">
+        <h3>${statusBucket(finding.status) === 'Fixed' ? 'Fix verified' : 'Resolution'}</h3>
+        <p>${escapeHtml(finding.resolution || fix.summary || 'Resolution recorded.')}</p>
+        ${changes.length ? `<ul class="change-list">${changes.join('')}</ul>` : ''}
+      </section>
+      ${
+        evidence.length
+          ? `<section class="detail-section"><h3>Fix evidence</h3><div class="evidence-links">${evidence
+              .map((item) => evidenceLink(item.label, item.url, item.note || 'Verification evidence'))
+              .join('')}</div></section>`
+          : ''
+      }
+    `;
+  }
+
+  function openFinding(id, updateHash = true) {
+    const finding = findings.find((item) => item.id === id);
+    if (!finding) return;
+    elements.dialogKicker.textContent = `${finding.id} · ${finding.scenario} · ${finding.type}`;
+    elements.dialogTitle.textContent = finding.title;
+    const fixed = statusBucket(finding.status) === 'Fixed';
+    const resolved = fixed || statusBucket(finding.status) === 'Closed';
+    elements.dialogContent.innerHTML = `
+      <div class="detail-status">
+        <span class="tag tag-${finding.severity.toLowerCase()}">${finding.severity}</span>
+        <span class="status-label ${statusClass(finding.status)}">${escapeHtml(finding.status)}</span>
+      </div>
+      <section class="detail-section">
+        <h3>What was found</h3>
+        <p>${escapeHtml(finding.description || finding.title)}</p>
+      </section>
+      <section class="detail-section"><h3>Reproduction / observed path</h3><p>${escapeHtml(finding.steps)}</p></section>
+      <section class="detail-section"><h3>Expected result / acceptance</h3><p>${escapeHtml(finding.expected)}</p></section>
+      <section class="detail-section">
+        <h3>Original evidence</h3>
+        <p>${escapeHtml(finding.evidenceStatus)} · 11 September campaign record or eligible reused run. Private webapp <code>tests/e2e/pitcher/</code> numbered scenario runs and continuation appendices are the source of this sanitized consolidation. <a href="#coverage" id="dialog-coverage">View scenario coverage and provenance</a>.</p>
+        <div class="evidence-links">
+          ${evidenceLink('Run record', finding.sourceUrl, `${finding.source}:${finding.line}`)}
+          ${evidenceLink('Captured evidence', finding.evidenceUrl, 'Screenshots, recordings, and evidence notes')}
+        </div>
+      </section>
+      ${fixTemplate(finding)}
+      <section class="detail-section">
+        <h3>Lifecycle</h3>
+        <div class="timeline">
+          <div class="timeline-item done"><strong>Finding recorded</strong><small>${finding.scenario} · Pitcher Chrome evidence run</small></div>
+          <div class="timeline-item ${finding.fix ? 'done' : ''}"><strong>Change linked</strong><small>${finding.fix ? 'Commit and changed files recorded' : 'Awaiting implementation'}</small></div>
+          <div class="timeline-item ${resolved ? 'done' : ''}"><strong>Verification evidence</strong><small>${resolved ? escapeHtml(finding.verifiedAt || 'Recorded') : 'Awaiting browser retest'}</small></div>
+        </div>
+      </section>
+    `;
+    document.querySelector('#dialog-coverage').addEventListener('click', () => elements.dialog.close());
+    if (!elements.dialog.open) elements.dialog.showModal();
+    if (updateHash) history.replaceState(null, '', `${location.pathname}${location.search}#${id}`);
+  }
+
+  function closeDialog() {
+    elements.dialog.close();
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
+  }
+
+  function persistView() {
+    const params = new URLSearchParams();
+    if (state.search) params.set('q', state.search);
+    if (state.types.size) params.set('type', [...state.types].join(','));
+    if (state.statuses.size) params.set('status', [...state.statuses].join(','));
+    if (state.severities.size) params.set('severity', [...state.severities].join(','));
+    if (state.sort !== 'severity') params.set('sort', state.sort);
+    const query = params.toString();
+    const hash = location.hash;
+    history.replaceState(null, '', `${location.pathname}${query ? `?${query}` : ''}${hash}`);
+  }
+
+  function hydrateView() {
+    const params = new URLSearchParams(location.search);
+    state.search = params.get('q') || '';
+    state.sort = Object.hasOwn(comparators, params.get('sort')) ? params.get('sort') : 'severity';
+    ['type', 'status', 'severity'].forEach((key) => {
+      const setName = key === 'type' ? 'types' : key === 'status' ? 'statuses' : 'severities';
+      const values = params.get(key)?.split(',').filter(Boolean) || [];
+      const allowed = key === 'type' ? ['Defect', 'Question'] : key === 'status' ? ['Open', 'Fixed', 'Closed', 'In progress', 'Needs retest'] : Object.keys(severityWeight);
+      state[setName] = new Set(values.filter(value => allowed.includes(value)));
+    });
+    elements.search.value = state.search;
+    elements.sort.value = state.sort;
+  }
+
+  function clearFilters() {
+    state.search = '';
+    state.types.clear();
+    state.statuses.clear();
+    state.severities.clear();
+    elements.search.value = '';
+    renderFilters();
+    render();
+  }
+
+  function applyMetricFilter(metric) {
+    clearFilters();
+    if (metric === 'urgent') {
+      state.severities = new Set(['Critical', 'High']);
+      state.statuses = new Set(['Open']);
+    }
+    if (metric === 'open') state.statuses = new Set(['Open']);
+    if (metric === 'fixed') state.statuses = new Set(['Fixed']);
+    if (metric === 'closed') state.statuses = new Set(['Closed']);
+    renderFilters();
+    render();
+    document.querySelector('.results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showToast(message) {
+    elements.toast.textContent = message;
+    elements.toast.classList.add('visible');
+    window.clearTimeout(showToast.timeout);
+    showToast.timeout = window.setTimeout(() => elements.toast.classList.remove('visible'), 2200);
+  }
+
+  async function copyViewLink() {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      showToast('Filtered view link copied');
+    } catch {
+      showToast('Copy unavailable — use the browser address bar');
+    }
+  }
+
+  function exportCsv() {
+    const columns = ['id', 'type', 'severity', 'status', 'scenario', 'area', 'title', 'steps', 'description', 'expected', 'evidenceStatus'];
+    const quote = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const csv = [columns.join(','), ...filteredFindings().map((item) => columns.map((column) => quote(item[column])).join(','))].join('\n');
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    link.download = 'pitcher-uat-interim-findings-20260911.csv';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    showToast('CSV exported');
+  }
+
+  elements.search.addEventListener('input', (event) => {
+    state.search = event.target.value;
+    render();
+  });
+  elements.sort.addEventListener('change', (event) => {
+    state.sort = event.target.value;
+    render();
+  });
+  document.querySelectorAll('[data-metric-filter]').forEach((button) => {
+    button.addEventListener('click', () => applyMetricFilter(button.dataset.metricFilter));
+  });
+  document.querySelector('#clear-filters').addEventListener('click', clearFilters);
+  document.querySelector('#share-button').addEventListener('click', copyViewLink);
+  document.querySelector('#export-button').addEventListener('click', exportCsv);
+  document.querySelector('#dialog-close').addEventListener('click', closeDialog);
+  elements.dialog.addEventListener('click', (event) => {
+    if (event.target === elements.dialog) closeDialog();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === '/' && !elements.dialog.open && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) {
+      event.preventDefault();
+      elements.search.focus();
+    }
+  });
+
+  elements.dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(); });
+  window.addEventListener('hashchange', () => { if(location.hash) openFinding(location.hash.slice(1), false); else if(elements.dialog.open) elements.dialog.close(); });
+  const initialId = location.hash.replace('#', '');
+  hydrateView();
+  renderMetadata();
+  renderMetrics();
+  renderFilters();
+  render();
+  if (initialId) openFinding(initialId);
+})();
