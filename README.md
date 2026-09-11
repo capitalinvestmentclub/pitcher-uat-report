@@ -1,5 +1,9 @@
 # Pitcher UAT — interim public report
 
+Published report: https://capitalinvestmentclub.github.io/pitcher-uat-report/
+
+The repository was transferred from wase932 to capitalinvestmentclub at the user's request, preserving history. Public GitHub Pages was enabled for the organization; private Pages remains disabled. Source links now point to the organization repository. Test results are unchanged.
+
 Sanitized 11 September 2026 Chrome-only test findings, published by wase932 at the user's request before further execution. Static HTML/CSS/JavaScript; no runtime dependencies, accounts, tracking or secrets.
 
 35 partial scenario records, 210 incomplete whole-journey viewport cells. Successful subchecks are described separately. Finding priorities are proposed; this is not final UAT acceptance or go-live approval.

@@ -8,7 +8,7 @@ const html=fs.readFileSync('index.html','utf8');
 const data=fs.readFileSync('data.js','utf8');
 const script=fs.readFileSync('app.js','utf8');
 function setup(query='',updates={}){
-  const dom=new JSDOM(html,{url:'https://wase932.github.io/pitcher-uat-report/'+query,runScripts:'outside-only'});
+  const dom=new JSDOM(html,{url:'https://capitalinvestmentclub.github.io/pitcher-uat-report/'+query,runScripts:'outside-only'});
   const w=dom.window,d=w.document;
   w.HTMLElement.prototype.scrollIntoView=function(){};
   w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
