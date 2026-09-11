@@ -30,6 +30,28 @@ test('matching dashboard structure, unchanged data and no sample findings',()=>{
  assert.equal(x.$('#metric-urgent').textContent,'13');assert.equal(x.$('#metric-fixed').textContent,'0');assert.ok(html.startsWith('<!doctype html>'));
  assert.ok(!html.includes('truncated output'));assert.ok(!x.d.body.textContent.includes('ASS-003'));assert.equal(x.$('dialog').getAttribute('aria-labelledby'),'dialog-title');x.dom.window.close();
 });
+test('evidence selection switches both surfaces, preserves deep links and never substitutes unrelated images',()=>{
+ const x=setup();assert.equal(x.all('#selected-evidence img').length,0);
+ const records=x.w.PR_REVIEW_DATA.findings;
+ for(const finding of records){
+   x.input('#evidence-finding',finding.id);
+   assert.equal(x.all('#selected-evidence img').length,finding.visuals.length);
+   assert.match(x.$('#selected-evidence').textContent,new RegExp(finding.id));
+   x.$(`[data-id=${finding.id}]`).click();
+   assert.equal(x.all('#dialog-content .finding-evidence img').length,finding.visuals.length);
+   assert.equal(x.$('#evidence-finding').value,finding.id);
+   for(const item of finding.visuals)assert.ok(fs.existsSync(item.src));
+   if(!finding.visuals.length)assert.match(x.$('#dialog-content').textContent,/No visual evidence published/);
+   x.$('#dialog-close').click();
+ }
+ x.input('#evidence-finding','PIT-F008');assert.equal(x.all('#selected-evidence img').length,2);
+ x.input('#evidence-finding','PIT-F012');assert.match(x.$('#selected-evidence img').src,/negative-spend/);
+ const y=setup(x.w.location.search);assert.equal(y.$('#evidence-finding').value,'PIT-F012');assert.equal(y.all('#selected-evidence img').length,1);y.dom.window.close();
+ x.$('#selected-evidence img').dispatchEvent(new x.w.Event('error'));assert.match(x.$('#selected-evidence').textContent,/could not load/);
+ x.input('#evidence-finding','');assert.equal(x.all('#selected-evidence img').length,0);assert.match(x.$('#selected-evidence').textContent,/Select a finding/);
+ x.dom.window.close();
+ const z=setup('?evidence=invalid#PIT-F008');assert.equal(z.$('#evidence-finding').value,'PIT-F008');assert.equal(z.all('#selected-evidence img').length,2);z.dom.window.close();
+});
 test('search, every filter option, combinations, empty recovery and every sort',()=>{
  const x=setup();for(const q of ['PIT-F001','  cancelled  ','<script>','é, 漢字',' '.repeat(5),'x'.repeat(2000),'']){x.input('#search',q);assert.ok(!x.$('#active-filter-copy script'));}
  for(const checkbox of x.all('.filters input[type=checkbox]')){checkbox.click();assert.ok(x.all('.finding-row').every(row=>row.textContent.includes(checkbox.value)));checkbox.click();}

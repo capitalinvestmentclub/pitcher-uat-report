@@ -77,6 +77,16 @@ const report = {
     ['Low',[3],'Activation dashboard CTA reaches root','Complete activation and select Go Dashboard in the reused run.','CTA led to the root route instead of the expected dashboard destination.','Activation CTA should reach the intended signed-in destination.','Observed defect'],
     ['Low',[30,35],'Grant emails omit context or address the wrong role','Read application and rejection messages against corresponding in-app notices.','Creator email said Dear Admin; rejection email omitted the reason present in-app.','Recipient role and decision context must match the event.','Observed defect']
   ],
+  visualEvidence: {
+    'PIT-F008': [
+      {src:'assets/pit-f008-applicant-answers.jpg',capturedAt:'2026-09-11 15:40:15 UTC',caption:'Applicant-side saved draft shows populated multi-choice and long-text answers. This is the input-side comparison, not proof of creator visibility.'},
+      {src:'assets/pit-f008-creator-review.jpg',capturedAt:'2026-09-11 15:41:13 UTC',caption:'Creator review shows overview and justification. The recorded full review inspection found the four required custom answers missing; this partial capture shows the supporting-context area.'}
+    ],
+    'PIT-F010': [{src:'assets/grant-before-termination.jpg',capturedAt:'2026-09-11 15:54:50 UTC',caption:'Historical synthetic grant overview reports monthly cadence despite tracking-off setup. This supports the displayed cadence inconsistency only, not every configuration issue in this consolidated finding. The grant was subsequently terminated.'}],
+    'PIT-F012': [{src:'assets/pit-f012-negative-spend.jpg',capturedAt:'2026-09-11 15:14:35 UTC',caption:'Published synthetic financial report displays planned spend −$1.00 and actual spend −$0.01. Supports the negative-spend branch, not the separate reversed-date and URL branches.'}],
+    'PIT-F021': [{src:'assets/pit-f021-holder-readback.jpg',capturedAt:'2026-09-11 14:36:05 UTC',caption:'Saved synthetic external holder has an email-address dash after malformed-email submission. This readback supports missing email display; the inert removal action is documented in the run, not proved by this still image.'}],
+    'PIT-F033': [{src:'assets/pit-f033-voting-layout.jpg',capturedAt:'2026-09-11 15:41:00 UTC',caption:'Creator application table collapses voting-stage text into narrow vertical fragments. Supports the grant-table layout branch, not the separate invitation-chip branch.'}]
+  },
   gaps: [
     ['Required uploads','PIT006/008/009 and attachment/media branches','A permitted actual file-picker mechanism is needed. Seeded completed uploads cannot count as UI success.'],
     ['Payout configuration','PIT026/029','USD/Plaid and NGN linking unavailable in the inspected test environment. Do not use real banking details to bypass setup.'],

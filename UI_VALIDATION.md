@@ -24,3 +24,13 @@ Screenshots are recorded in this task's browser tool evidence. Captures may excl
 ## Automated results
 
 `npm test`: six groups passed; zero failed. `app.js` line coverage 98.89%, function coverage 100%, branch coverage 95.91%. Test dependencies are development-only. Browser warning/error readback was empty after copy/export checks. No application API or Playwright workflow execution was used.
+
+## Evidence revision 3 — 11 September 2026
+
+Added only visual-evidence metadata to data.js; finding outcomes and scenario coverage remain unchanged. Six reviewed original synthetic-data captures are mapped to five findings. Captions distinguish supporting observations from claims not proved by the still image.
+
+Seven DOM test groups pass with zero failures: 98.97% line, 100% function and 96.33% branch coverage. The new regression group checks all 36 finding selections and drawers, asset existence, multi-image-to-single-image switching, explicit missing evidence, URL restoration, invalid selection and image-load failure.
+
+Actual Chrome: changed F012 to F008 and verified the financial image was replaced by two grant images, then selected F001 and verified the explicit no-evidence state. Inspected the F008 panel and drawer at 390×844: images and captions fit the width, and original-image links remain available. Desktop panel was also visually inspected. Device override cleared afterward. These are report UI checks, not additional product scenario passes.
+
+Only the CIC repository is an active publishing target. The old personal Pages URL is offline; the old repository address redirects to CIC, so deleting through it would endanger the retained report.

@@ -5,7 +5,8 @@ window.PR_REVIEW_DATA = {
   findings: report.findings.map(([severity,ids,title,steps,description,expected,evidenceStatus],i)=>({
     id:'PIT-F'+String(i+1).padStart(3,'0'),severity,title,steps,description,expected,evidenceStatus,status:'Open',
     scenario:ids.map(pit).join(' / '),area:report.scenarios.find(s=>s[0]===ids[0])[1],
-    type:evidenceStatus==='Observed defect'?'Defect':'Question'
+    type:evidenceStatus==='Observed defect'?'Defect':'Question',
+    visuals: report.visualEvidence['PIT-F'+String(i+1).padStart(3,'0')] || []
   }))
 };
 document.getElementById('scenarios').innerHTML=report.scenarios.map(([n,title,done,todo])=>`<tr id="scenario-${n}"><td>${pit(n)}<br>${escapeText(title)}<br><span class="history">PARTIAL · ${n<=6?'Reused eligible prior run':'Current run + appendices'}</span></td><td>${escapeText(done)}</td><td>${escapeText(todo)}</td><td><div class="cells">${report.sizes.map(s=>`<span>${s} · incomplete</span>`).join('')}</div></td></tr>`).join('');
@@ -37,6 +38,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
     toast: document.querySelector('#toast'),
   };
   const state = {
+    evidence: '',
     search: '',
     types: new Set(),
     statuses: new Set(),
@@ -296,6 +298,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
   function openFinding(id, updateHash = true) {
     const finding = findings.find((item) => item.id === id);
     if (!finding) return;
+    selectEvidence(id);
     elements.dialogKicker.textContent = `${finding.id} · ${finding.scenario} · ${finding.type}`;
     elements.dialogTitle.textContent = finding.title;
     const fixed = statusBucket(finding.status) === 'Fixed';
@@ -319,6 +322,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
           ${evidenceLink('Captured evidence', finding.evidenceUrl, 'Screenshots, recordings, and evidence notes')}
         </div>
       </section>
+      <section class="detail-section finding-visuals"><h3>Visual evidence for ${escapeHtml(finding.id)}</h3>${visualTemplate(finding)}</section>
       ${fixTemplate(finding)}
       <section class="detail-section">
         <h3>Lifecycle</h3>
@@ -330,6 +334,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
       </section>
     `;
     document.querySelector('#dialog-coverage').addEventListener('click', () => elements.dialog.close());
+    bindImageErrors(elements.dialogContent);
     if (!elements.dialog.open) elements.dialog.showModal();
     if (updateHash) history.replaceState(null, '', `${location.pathname}${location.search}#${id}`);
   }
@@ -341,6 +346,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
 
   function persistView() {
     const params = new URLSearchParams();
+    if (state.evidence) params.set('evidence', state.evidence);
     if (state.search) params.set('q', state.search);
     if (state.types.size) params.set('type', [...state.types].join(','));
     if (state.statuses.size) params.set('status', [...state.statuses].join(','));
@@ -354,6 +360,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
   function hydrateView() {
     const params = new URLSearchParams(location.search);
     state.search = params.get('q') || '';
+    state.evidence = findings.some(f => f.id === params.get('evidence')) ? params.get('evidence') : '';
     state.sort = Object.hasOwn(comparators, params.get('sort')) ? params.get('sort') : 'severity';
     ['type', 'status', 'severity'].forEach((key) => {
       const setName = key === 'type' ? 'types' : key === 'status' ? 'statuses' : 'severities';
@@ -444,11 +451,40 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
 
   elements.dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(); });
   window.addEventListener('hashchange', () => { if(location.hash) openFinding(location.hash.slice(1), false); else if(elements.dialog.open) elements.dialog.close(); });
+  function visualTemplate(finding) {
+    if (!finding.visuals.length) return '<p class="evidence-empty">No visual evidence published for this finding. Its recorded outcome remains in the run notes; an unrelated screenshot is not substituted.</p>';
+    return finding.visuals.map(item => `<figure class="finding-evidence"><a href="${escapeHtml(item.src)}" target="_blank" rel="noreferrer"><img src="${escapeHtml(item.src)}" alt="${escapeHtml(finding.id + ': ' + item.caption)}" loading="lazy"></a><figcaption><strong>${escapeHtml(item.capturedAt)}</strong><br>${escapeHtml(item.caption)}<br><a href="${escapeHtml(item.src)}" target="_blank" rel="noreferrer">Open original image ↗</a></figcaption></figure>`).join('');
+  }
+
+  function bindImageErrors(container) {
+    container.querySelectorAll('.finding-evidence img').forEach(img => {
+      img.addEventListener('error', () => {
+        const message = document.createElement('p');
+        message.className = 'evidence-empty';
+        message.textContent = 'This evidence image could not load. Use the original-image link below or retry after refreshing.';
+        img.replaceWith(message);
+      }, {once:true});
+    });
+  }
+
+  function selectEvidence(id) {
+    const finding = findings.find(f => f.id === id);
+    state.evidence = finding ? finding.id : '';
+    document.querySelector('#evidence-finding').value = state.evidence;
+    const panel = document.querySelector('#selected-evidence');
+    panel.innerHTML = finding ? `<h3>${escapeHtml(finding.id)} · ${escapeHtml(finding.title)}</h3>${visualTemplate(finding)}` : '<p class="evidence-empty">Select a finding above or open one from the register to see its evidence.</p>';
+    bindImageErrors(panel);
+    persistView();
+  }
+
+  document.querySelector('#evidence-finding').innerHTML = '<option value="">Choose a finding</option>' + findings.map(f => `<option value="${f.id}">${escapeHtml(f.id + ' · ' + f.title + ' · ' + (f.visuals.length ? f.visuals.length + ' image(s)' : 'No public images'))}</option>`).join('');
+  document.querySelector('#evidence-finding').addEventListener('change', event => selectEvidence(event.target.value));
   const initialId = location.hash.replace('#', '');
   hydrateView();
   renderMetadata();
   renderMetrics();
   renderFilters();
   render();
+  selectEvidence(state.evidence);
   if (initialId) openFinding(initialId);
 })();

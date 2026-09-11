@@ -1134,6 +1134,11 @@ fieldset {
 
 
 
+/* Finding-specific evidence uses the same renderer in the drawer and appendix. */
+#evidence-finding{display:block;width:100%;min-width:0;max-width:100%;margin:12px 0 24px;padding:12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink)}
+.finding-evidence{margin:20px 0 28px}.finding-evidence img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px}.finding-evidence figcaption{margin-top:12px;line-height:1.6;font-size:.78rem;overflow-wrap:anywhere}.finding-evidence a{color:var(--accent-dark)}
+.evidence-empty{padding:16px;border-left:3px solid var(--line-strong);background:var(--paper);line-height:1.6}
+#selected-evidence h3{overflow-wrap:anywhere}.finding-visuals{min-width:0}
 /* Pitcher coverage appendix; dashboard follows the supplied sample. */
 .campaign-note{margin:1.2rem 4vw 0;color:var(--ink-soft);font-size:.75rem;line-height:1.7}
 .campaign-note strong{color:var(--ink);display:block}
