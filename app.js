@@ -1,7 +1,7 @@
 const pit = n => 'PIT-' + String(n).padStart(3,'0');
 const escapeText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 window.PR_REVIEW_DATA = {
-  meta: {commit:'revision-5',generatedAt:'2026-09-12T04:13:00Z',checkpoint:report.cutoff,url:'https://github.com/capitalinvestmentclub/pitcher-uat-report'},
+  meta: {commit:'90b9883d4e280a6779e830ac32519b4aa4e0cece',generatedAt:'2026-09-12T04:13:00Z',checkpoint:report.cutoff,url:'https://github.com/capitalinvestmentclub/pitcher-uat-report'},
   findings: report.findings.map(([severity,ids,title,steps,description,expected,evidenceStatus],i)=>({
     id:'PIT-F'+String(i+1).padStart(3,'0'),severity,title,steps,description,expected,evidenceStatus,status:'Open',
     scenario:ids.map(pit).join(' / '),area:report.scenarios.find(s=>s[0]===ids[0])[1],
