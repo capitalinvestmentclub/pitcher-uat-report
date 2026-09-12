@@ -1,7 +1,7 @@
 const pit = n => 'PIT-' + String(n).padStart(3,'0');
 const escapeText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 window.PR_REVIEW_DATA = {
-  meta: {commit:'5fbf4b35cfcfef4aa54b7daec6e3fee0398a0403',generatedAt:'2026-09-11T19:35:00Z',checkpoint:report.cutoff,url:'https://github.com/capitalinvestmentclub/pitcher-uat-report'},
+  meta: {commit:'revision-5',generatedAt:'2026-09-12T04:13:00Z',checkpoint:report.cutoff,url:'https://github.com/capitalinvestmentclub/pitcher-uat-report'},
   findings: report.findings.map(([severity,ids,title,steps,description,expected,evidenceStatus],i)=>({
     id:'PIT-F'+String(i+1).padStart(3,'0'),severity,title,steps,description,expected,evidenceStatus,status:'Open',
     scenario:ids.map(pit).join(' / '),area:report.scenarios.find(s=>s[0]===ids[0])[1],
@@ -295,6 +295,17 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
     `;
   }
 
+  function retestTemplate(finding) {
+    if (!finding.retest) return '';
+    return `
+      <section class="detail-section retest-section">
+        <h3>Deployed Chrome retest</h3>
+        <p><strong>${escapeHtml(finding.retest.check)}</strong><br>${escapeHtml(finding.retest.browser)} · ${escapeHtml(finding.retest.environment)}</p>
+        <div class="cells retest-cells">${finding.retest.sizes.map((item) => `<span>${escapeHtml(item.size)} · ${escapeHtml(item.status)}</span>`).join('')}</div>
+      </section>
+    `;
+  }
+
   function openFinding(id, updateHash = true) {
     const finding = findings.find((item) => item.id === id);
     if (!finding) return;
@@ -323,6 +334,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
         </div>
       </section>
       <section class="detail-section finding-visuals"><h3>Visual evidence for ${escapeHtml(finding.id)}</h3>${visualTemplate(finding)}</section>
+      ${retestTemplate(finding)}
       ${fixTemplate(finding)}
       <section class="detail-section">
         <h3>Lifecycle</h3>
@@ -418,7 +430,7 @@ document.getElementById('gaps').innerHTML=report.gaps.map(([title,scope,body])=>
     const csv = [columns.join(','), ...filteredFindings().map((item) => columns.map((column) => quote(item[column])).join(','))].join('\n');
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-    link.download = 'pitcher-uat-interim-findings-20260911.csv';
+    link.download = 'pitcher-uat-critical-high-retest-20260912.csv';
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     showToast('CSV exported');

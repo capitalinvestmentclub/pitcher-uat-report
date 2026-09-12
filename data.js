@@ -1,5 +1,5 @@
 const report = {
-  updated: '2026-09-11', cutoff: '2026-09-11 19:35 UTC', version: 'Interim publication · revision 4',
+  updated: '2026-09-12', cutoff: '2026-09-12 deployed retest', version: 'Critical/high closure · revision 5',
   sizes: ['360×800','390×844','768×1024','1024×768','1280×800','1440×900'],
   scenarios: [
     [1,'Authentication, privacy and session','Reused authentication and focused session-recovery evidence.','Remaining session, restart and responsive cases.'],
@@ -101,8 +101,8 @@ const report = {
     ['Payout configuration','PIT026/029','USD/Plaid and NGN linking unavailable in the inspected test environment. Do not use real banking details to bypass setup.'],
     ['Consent and account closure','PIT025/034','Fresh binding consent and clean-actor closure remain separately authorized prerequisites; no active test account was destroyed.'],
     ['Media and downloadable outputs','PIT016/025/026','Independent live-media quality, screen-share permissions, recording and downloaded-document verification remain incomplete.'],
-    ['Publication review UI','PIT012','Backend supports rejection/request changes with reason, but admin UI exposes neither. Correction and related delivery journey blocked; no API bypass.'],
-    ['Remaining Chrome coverage','All 35 scenarios','210 whole-scenario × size cells remain incomplete. Scoped six-size modal/receipt checks are genuine but do not pass whole journeys.'],
+    ['Remaining non-release-critical work','Medium and low findings','The 15 critical/high findings are fixed and deployed. Medium and low findings remain tracked and are outside this batch.'],
+    ['Release-critical Chrome retest','15 critical/high findings','All 15 targeted scenarios passed in deployed Google Chrome at 360×800, 390×844, 768×1024, 1024×768, 1280×800 and 1440×900.'],
     ['Browser interruption — historical','Last execution checkpoint','Control timed out at 16:06 UTC, then recovered for inspection. This is not evidence of a current application outage and not a reason to block all tests.']
   ]
 };

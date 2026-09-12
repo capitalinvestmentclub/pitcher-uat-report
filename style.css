@@ -1153,7 +1153,7 @@ fieldset {
 .table-wrap{overflow:auto;border:1px solid var(--line)}table{border-collapse:collapse;min-width:1000px;width:100%;font-size:.75rem}
 th,td{padding:1rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
 th{background:var(--accent-wash)}td:first-child{min-width:170px;font-weight:700}td:nth-child(2),td:nth-child(3){min-width:240px}
-.cells{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;min-width:200px}.cells span{font:10px 'DM Mono',monospace;padding:4px;background:var(--warning-wash);white-space:nowrap}
+.cells{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;min-width:200px}.cells span{font:10px 'DM Mono',monospace;padding:4px;background:var(--warning-wash);white-space:nowrap}.retest-cells span{color:#166534;background:#f0fdf4;border:1px solid #bbf7d0}
 .history{font-size:.65rem;font-weight:400;color:var(--ink-soft)}figure{margin:0}figure img{width:100%;height:auto;border:1px solid var(--line)}
 code{font-size:.7rem;overflow-wrap:anywhere}.report-footer{padding:2rem 4vw;border-top:1px solid var(--line);font-size:.75rem;color:var(--ink-soft)}
 .finding-main{grid-template-columns:4.5rem minmax(0,1fr)}.finding-id{font-size:.64rem}.status-label{align-self:start}
