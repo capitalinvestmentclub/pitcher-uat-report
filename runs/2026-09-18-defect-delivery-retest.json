@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-17-defect-batch-deployed-retest",
+  "state": "COMPLETE",
+  "completedAt": "2026-09-18T10:10:00Z",
+  "environment": {
+    "frontend": {
+      "url": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com",
+      "version": "auth-35306705473-1",
+      "mergeCommit": "d8777aae575f942514538381d54d3715aabf4b8c",
+      "trafficPromoted": false
+    },
+    "api": {
+      "url": "https://cicdevapi.uc.r.appspot.com",
+      "mergeCommit": "46a098ebcdcdebac39d1ba73569c793cd70a72fb",
+      "health": "/api/v1/health",
+      "postMergeTestRisk": "5 suites and 7 tests failed in workflow run 35281782628."
+    },
+    "notificationservice": {
+      "mergeCommit": "08b76889070663f7e7d57cad2003d5cd87378340"
+    }
+  },
+  "scope": {
+    "sourceFindingCount": 276,
+    "sourceRegisterSha256": "ab4d22a0e2082c3fd3c8ccca8533ff5e0e8b63a8c1b6e9c7d23ff2606eda03ee",
+    "uniqueScenarioFamilies": 96,
+    "browser": "Chrome",
+    "defaultViewport": "1792x976",
+    "viewportPolicy": "One representative desktop viewport unless the finding concerns responsiveness or the observed behavior warrants expansion.",
+    "mergePolicy": "Keep report changes local until every finding is PASS, FAIL, BLOCKED, OBSOLETE, DUPLICATE_COVERAGE, or PASSED_OVER."
+  },
+  "group": "Pitcher",
+  "summary": {
+    "total": 26,
+    "FAIL": 3,
+    "PASS": 11,
+    "PASSED_OVER": 12
+  },
+  "findings": [
+    {
+      "id": "PIT-F014",
+      "group": "Pitcher",
+      "scenarioId": "PIT-006 / PIT-023 / PIT-025 / PIT-028 / PIT-029 / PIT-035",
+      "severity": "MEDIUM",
+      "title": "Calendar dates shift by one day",
+      "status": "PASSED_OVER",
+      "disposition": "PARTIAL_BRANCH_OBSERVED_REMAINING_FIXTURES_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:34:27Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/manage-grants/6aa79266353b35320a6f6c5e",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-014-calendar-date/PIT-F014-result.json"
+      ],
+      "notes": "Observed the saved draft grant display Applications Closed 13 Oct 2026 and Contribution Target Date: 13 Oct 2026 in Chrome under America/Phoenix, with the edit form reopening the application deadline as 2026-10-13; The edit modal was closed without saving and no grant record was mutated; Automated evidence capture encountered an intermittent grant-detail loading state after the bounded correction attempt; Passed over the consolidated KYC, external-holder, agreement, milestone, and financial-report date branches because no isolated exact-date fixture and reversible save/readback path was available in this interval"
+    },
+    {
+      "id": "PIT-F015",
+      "group": "Pitcher",
+      "scenarioId": "PIT-011",
+      "severity": "MEDIUM",
+      "title": "Session filters and Back state are inconsistent",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T08:01:32.318Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/manage-pitches?sessions=0",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-011/PIT-F015-session-filter-and-back-state.png",
+        "evidence/pitcher/PIT-011/PIT-F015-result.json"
+      ],
+      "notes": "Has Sessions returns the known session-bearing pitch and excludes a known zero-session pitch; Opening the filtered pitch and returning through browser history preserves the Has Sessions selection and result; No Sessions returns the known zero-session pitch and excludes the session-bearing pitch"
+    },
+    {
+      "id": "PIT-F016",
+      "group": "Pitcher",
+      "scenarioId": "PIT-016",
+      "severity": "MEDIUM",
+      "title": "Completed session recording is not playable",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T08:08:28.932Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/session/69bbf6e2c800e2d0a401bb6a",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-016/PIT-F016-completed-recording-playable.png",
+        "evidence/pitcher/PIT-016/PIT-F016-result.json"
+      ],
+      "notes": "The deployed ended session exposes a processed cloud recording and visible video player; The signed recording endpoint returned HTTP 206 with binary/octet-stream content that Chrome decoded; Chrome loaded finite playable metadata with duration 497.55 seconds; The signed media URL was intentionally excluded from committed evidence"
+    },
+    {
+      "id": "PIT-F017",
+      "group": "Pitcher",
+      "scenarioId": "PIT-017",
+      "severity": "MEDIUM",
+      "title": "Session emails contain wrong duration and destination",
+      "status": "PASSED_OVER",
+      "disposition": "EXTERNAL_MAILBOX_AND_EVENT_FIXTURE_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:11:48.581Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/notifications",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/email-delivery/PIT-email-delivery-fixture-boundary.png",
+        "evidence/pitcher/email-delivery/PIT-email-delivery-result.json"
+      ],
+      "notes": "The deployed notification-preference panel and optional Marketing email and Community email controls load for the established actor; This run has no authenticated mailbox readback for the Pitcher account, so message body, recipient role, duration, timezone, reason, and CTA destination cannot be verified; No isolated session reschedule/cancellation, pitch promotion/agreement, or grant application/rejection event fixture is available; shared lifecycle records were not mutated; The four email-delivery findings are passed over without any claim that delivery or content is fixed"
+    },
+    {
+      "id": "PIT-F018",
+      "group": "Pitcher",
+      "scenarioId": "PIT-018",
+      "severity": "MEDIUM",
+      "title": "RFI accepts a description beyond its displayed limit",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T07:47:37.262Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/pitch/6aa39a936aaab838c8d7bad4?id=6aa39a936aaab838c8d7bad4&tab=6",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-018/PIT-F018-rfi-500-character-boundary.png",
+        "evidence/pitcher/PIT-018/PIT-F018-result.json"
+      ],
+      "notes": "The deployed RFI composer exposes a 500-character maximum matching its visible counter; Entering 501 characters through Chrome retains exactly 500 characters and displays 500 / 500; The test stopped before submission; no information request was created"
+    },
+    {
+      "id": "PIT-F019",
+      "group": "Pitcher",
+      "scenarioId": "PIT-020",
+      "severity": "MEDIUM",
+      "title": "Completed assessment link opens an editable blank form",
+      "status": "PASSED_OVER",
+      "disposition": "EXACT_TERMINAL_RECORD_ACTORS_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:38:00Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/pitch/6aa39a936aaab838c8d7bad4?id=6aa39a936aaab838c8d7bad4&tab=2&reviewId=6aa3b33b57a9417382c99db1",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-019-completed-assessment/PIT-F019-result.json"
+      ],
+      "notes": "The exact historical paid Review record and deep link remain present; The available Assessor actor received You are not authorized to edit this assessment draft and no editable terminal form was exposed; The available Pitcher actor received You don't have permission to access this route because it is not the historical request owner; These negative controls do not prove the required immutable completed-result experience for the owning historical actors, whose authenticated sessions are unavailable"
+    },
+    {
+      "id": "PIT-F020",
+      "group": "Pitcher",
+      "scenarioId": "PIT-021 / PIT-022",
+      "severity": "MEDIUM",
+      "title": "Historical wallet presentation changes or misstates entries",
+      "status": "PASSED_OVER",
+      "disposition": "STABILITY_CONTROL_PASSED_EXACT_HOLD_RELEASE_REPLAY_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:45:24.349Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/wallets",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-wallet-ledger-receipts/PIT-wallet-history-refresh.png",
+        "evidence/pitcher/PIT-wallet-ledger-receipts/PIT-F020-result.json"
+      ],
+      "notes": "The existing marketplace debit remained identical across a full reload: USD -500.00, running balance USD 997,733.97, Marketplace seller, Transfer; This proves one immutable deployed ledger control but does not replay the original later hold/release sequence needed to close the consolidated historical-stability finding"
+    },
+    {
+      "id": "PIT-F021",
+      "group": "Pitcher",
+      "scenarioId": "PIT-023",
+      "severity": "MEDIUM",
+      "title": "External-holder records cannot be reliably maintained",
+      "status": "FAIL",
+      "disposition": "FAIL",
+      "testedAt": "2026-09-18T04:54:00.000Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/pitch/63d8ac4006621f0027c9ef01?tab=4",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-021-external-holder/PIT-F021-edit-publication-state-conflict.png",
+        "evidence/pitcher/PIT-021-external-holder/PIT-F021-result.json"
+      ],
+      "notes": "Malformed email produced Please enter a valid email address and sent no external-shareholder write; A unique valid external holder persisted with its email and appeared in the deployed equity table; Editing the newly created holder failed in the deployed UI with Pitch changed publication state while this shareholder change was being saved; The temporary holder was absent from API readback after cleanup"
+    },
+    {
+      "id": "PIT-F022",
+      "group": "Pitcher",
+      "scenarioId": "PIT-025",
+      "severity": "MEDIUM",
+      "title": "Agreement preview overlaps at laptop sizes",
+      "status": "PASSED_OVER",
+      "disposition": "PASSED_OVER",
+      "testedAt": "2026-09-18T05:03:00.000Z",
+      "browser": "Chrome",
+      "viewport": null,
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/pitch/6a9ebed3d26f574c91434a15?tab=10",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-022-agreement-layout/PIT-F022-result.json"
+      ],
+      "notes": "A current readable pitch with a populated shareholders agreement was selected after the original dashboard-list fixture returned 404; The populated deployed agreement rendered at 1024x768 with its title, party email, $1,000.00 consideration, clauses, and signatures"
+    },
+    {
+      "id": "PIT-F023",
+      "group": "Pitcher",
+      "scenarioId": "PIT-026 / PIT-030 / PIT-035",
+      "severity": "MEDIUM",
+      "title": "Receipts misstate amounts, direction or transaction type",
+      "status": "FAIL",
+      "disposition": "REPRODUCED_DEPLOYED",
+      "testedAt": "2026-09-18T08:45:24.349Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/wallets",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-wallet-ledger-receipts/PIT-wallet-history-refresh.png",
+        "evidence/pitcher/PIT-wallet-ledger-receipts/PIT-F023-result.json"
+      ],
+      "notes": "Grant contribution receipt correctly shows personal sender, grant recipient, USD 100: true; Grant award receipt correctly shows grant sender, personal recipient, USD 20: true; Positive personal-wallet refund receipt correctly shows grant sender, personal recipient, USD 100: false"
+    },
+    {
+      "id": "PIT-F024",
+      "group": "Pitcher",
+      "scenarioId": "PIT-027",
+      "severity": "MEDIUM",
+      "title": "Agreement email link becomes empty after promotion",
+      "status": "PASSED_OVER",
+      "disposition": "EXTERNAL_MAILBOX_AND_EVENT_FIXTURE_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:11:48.581Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/notifications",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/email-delivery/PIT-email-delivery-fixture-boundary.png",
+        "evidence/pitcher/email-delivery/PIT-email-delivery-result.json"
+      ],
+      "notes": "The deployed notification-preference panel and optional Marketing email and Community email controls load for the established actor; This run has no authenticated mailbox readback for the Pitcher account, so message body, recipient role, duration, timezone, reason, and CTA destination cannot be verified; No isolated session reschedule/cancellation, pitch promotion/agreement, or grant application/rejection event fixture is available; shared lifecycle records were not mutated; The four email-delivery findings are passed over without any claim that delivery or content is fixed"
+    },
+    {
+      "id": "PIT-F025",
+      "group": "Pitcher",
+      "scenarioId": "PIT-029",
+      "severity": "MEDIUM",
+      "title": "Trend dollar toggle is not clearly a variance view",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T09:03:37.486Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/project/63d993b83f6f4af93536d2ee?id=63d993b83f6f4af93536d2ee&tab=10",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-025-spend-variance/PIT-F025-dollar-variance-view.png",
+        "evidence/pitcher/PIT-025-spend-variance/PIT-F025-result.json"
+      ],
+      "notes": "Monthly Spend Variance explicitly defines the chart as actual spend minus planned spend; The percentage control says % variance and selects variancePct; The dollar control says $ variance and selects varianceAmount rather than Actual Spend; The deployed API supplied populated trend data for the rendered chart"
+    },
+    {
+      "id": "PIT-F026",
+      "group": "Pitcher",
+      "scenarioId": "PIT-030 / PIT-035",
+      "severity": "MEDIUM",
+      "title": "Grant status and approval prompts contradict lifecycle",
+      "status": "PASSED_OVER",
+      "disposition": "PASSED_OVER",
+      "testedAt": "2026-09-18T09:07:28Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/dashboard",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-026-grant-lifecycle/PIT-F026-result.json"
+      ],
+      "notes": "The current Pitcher grant register and API were searched across all available pages for terminated grants with applications; The only owned terminated grants were My Draft Grant and Friday demo, and both have zero applications; Terminated grants with applications exist under other owners, but their management pages are not authorized for the current Pitcher; The owned closed control UAT Guest Privacy has one Approved application, so it cannot reproduce the historical pending-on-terminated contradiction"
+    },
+    {
+      "id": "PIT-F027",
+      "group": "Pitcher",
+      "scenarioId": "PIT-035",
+      "severity": "MEDIUM",
+      "title": "Closed grant still presents Apply",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T07:44:58.892Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/grants/6a8537085d0f439c8ef23319",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-035/PIT-F027-closed-grant-no-apply.png",
+        "evidence/pitcher/PIT-035/PIT-F027-result.json"
+      ],
+      "notes": "The deployed public grant explicitly displays Applications Closed, Funding Closed, and closed status; No button or link whose accessible name contains Apply is rendered; The grant deadline is historical and the page does not offer stale application entry"
+    },
+    {
+      "id": "PIT-F029",
+      "group": "Pitcher",
+      "scenarioId": "PIT-031",
+      "severity": "MEDIUM",
+      "title": "Messages and unread badges require refresh",
+      "status": "PASSED_OVER",
+      "disposition": "PASSED_OVER",
+      "testedAt": "2026-09-18T09:10:44Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/messaging/6a2d07b645f2d1b0e43cf463",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-029-messaging-realtime/PIT-F029-assessor-thread-read-only.png",
+        "evidence/pitcher/PIT-029-messaging-realtime/PIT-F029-pitcher-unread-baseline.png",
+        "evidence/pitcher/PIT-029-messaging-realtime/PIT-F029-result.json"
+      ],
+      "notes": "The Pitcher dashboard loaded with a live global Messaging unread badge baseline of 3; The known Test Assessor and Test Pitcher direct thread loaded but its composer was contenteditable=false; Five additional existing Test Assessor and Test Pitcher thread candidates were unavailable or also read-only; No probe message was sent and no deployed message state was mutated"
+    },
+    {
+      "id": "PIT-F030",
+      "group": "Pitcher",
+      "scenarioId": "PIT-031",
+      "severity": "MEDIUM",
+      "title": "Email-preference positive control not established",
+      "status": "PASSED_OVER",
+      "disposition": "EXTERNAL_MAILBOX_AND_EVENT_FIXTURE_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:11:48.581Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/notifications",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/email-delivery/PIT-email-delivery-fixture-boundary.png",
+        "evidence/pitcher/email-delivery/PIT-email-delivery-result.json"
+      ],
+      "notes": "The deployed notification-preference panel and optional Marketing email and Community email controls load for the established actor; This run has no authenticated mailbox readback for the Pitcher account, so message body, recipient role, duration, timezone, reason, and CTA destination cannot be verified; No isolated session reschedule/cancellation, pitch promotion/agreement, or grant application/rejection event fixture is available; shared lifecycle records were not mutated; The four email-delivery findings are passed over without any claim that delivery or content is fixed"
+    },
+    {
+      "id": "PIT-F031",
+      "group": "Pitcher",
+      "scenarioId": "PIT-032",
+      "severity": "MEDIUM",
+      "title": "Feedback UI is hidden at target widths",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T07:37:56.664Z",
+      "browser": "Chrome",
+      "viewport": "1440x900",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/dashboard",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-032/PIT-F031-feedback-1440x900.png",
+        "evidence/pitcher/PIT-032/PIT-F031-feedback-390x844.png",
+        "evidence/pitcher/PIT-032/PIT-F031-result.json"
+      ],
+      "notes": "The Pitcher dashboard exposes the feedback launcher at 1440 and 390 widths; The Send feedback dialog opens visibly at both widths; The compact dialog remains horizontally contained inside the 390px viewport; No feedback was submitted"
+    },
+    {
+      "id": "PIT-F032",
+      "group": "Pitcher",
+      "scenarioId": "PIT-032",
+      "severity": "MEDIUM",
+      "title": "Assistant gives irrelevant high-confidence answers",
+      "status": "FAIL",
+      "disposition": "REPRODUCED_DEPLOYED",
+      "testedAt": "2026-09-18T08:15:53.887Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/assistant?from=%2Fmanage-grants%2F6a8537085d0f439c8ef23319%3Fid%3D6a8537085d0f439c8ef23319",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-032-assistant/PIT-F032-project-answer.png",
+        "evidence/pitcher/PIT-032-assistant/PIT-F032-grant-answer.png",
+        "evidence/pitcher/PIT-032-assistant/PIT-F032-result.json"
+      ],
+      "notes": "project: grounded=false; acknowledgedUnavailable=false; safeUncertainty=false; confidence=0.51; fallback=none; grant: grounded=false; acknowledgedUnavailable=false; safeUncertainty=false; confidence=0.52; fallback=none"
+    },
+    {
+      "id": "PIT-F033",
+      "group": "Pitcher",
+      "scenarioId": "PIT-010 / PIT-030 / PIT-035",
+      "severity": "MEDIUM",
+      "title": "Invitation and application controls lose legibility",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T08:22:34.248Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/manage-grants/6a8537085d0f439c8ef23319",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-033-responsive-controls/PIT-F033-long-invitation-chip-390.png",
+        "evidence/pitcher/PIT-033-responsive-controls/PIT-F033-voting-table-1792.png",
+        "evidence/pitcher/PIT-033-responsive-controls/PIT-F033-voting-table-1024.png",
+        "evidence/pitcher/PIT-033-responsive-controls/PIT-F033-result.json"
+      ],
+      "notes": "Long invitation chip at 390x844 remained inside the edit dialog without horizontal clipping: true; Voting-stage and approval text remained horizontally legible at 1792x976: true; Voting-stage and approval text remained horizontally legible at 1024x768: true; The edit modal was closed without saving, so no grant or invitation record was mutated"
+    },
+    {
+      "id": "PIT-F034",
+      "group": "Pitcher",
+      "scenarioId": "PIT-033",
+      "severity": "MEDIUM",
+      "title": "Marketplace trackers misrepresent discovery data",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T08:25:20.771Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/marketplace",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-034-marketplace-trackers/PIT-F034-most-valuable-routing.png",
+        "evidence/pitcher/PIT-034-marketplace-trackers/PIT-F034-top-movers-empty.png",
+        "evidence/pitcher/PIT-034-marketplace-trackers/PIT-F034-result.json"
+      ],
+      "notes": "Most Valuable values were descending on the stated USD-equivalent basis: true (10000, 1200, 1000, 400, 7.51, 7.51); At least one non-USD row retained its native amount and displayed an approximate USD ranking value: true; Selecting a Project tracker row produced a project details route: /project/6aa55a286cdf290abe517c52; Top Movers displayed a truthful empty state instead of zero-change assets"
+    },
+    {
+      "id": "PIT-F035",
+      "group": "Pitcher",
+      "scenarioId": "PIT-003",
+      "severity": "LOW",
+      "title": "Activation dashboard CTA reaches root",
+      "status": "PASSED_OVER",
+      "disposition": "FIXTURE_PRECONDITION_UNAVAILABLE",
+      "testedAt": "2026-09-18T07:41:11.969Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/dashboard",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-003/PIT-F035-activated-pitcher-boundary.png",
+        "evidence/pitcher/PIT-003/PIT-F035-result.json"
+      ],
+      "notes": "The established deployed Pitcher session is already activated and lands on the operational Pitcher Dashboard; No activation, email-verification, or registration-completion entry is exposed for this actor; Replaying the one-time activation CTA would require a fresh isolated mailbox-backed Pitcher fixture; no account was created or mutated"
+    },
+    {
+      "id": "PIT-F036",
+      "group": "Pitcher",
+      "scenarioId": "PIT-030 / PIT-035",
+      "severity": "LOW",
+      "title": "Grant emails omit context or address the wrong role",
+      "status": "PASSED_OVER",
+      "disposition": "EXTERNAL_MAILBOX_AND_EVENT_FIXTURE_UNAVAILABLE",
+      "testedAt": "2026-09-18T08:11:48.581Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/notifications",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/email-delivery/PIT-email-delivery-fixture-boundary.png",
+        "evidence/pitcher/email-delivery/PIT-email-delivery-result.json"
+      ],
+      "notes": "The deployed notification-preference panel and optional Marketing email and Community email controls load for the established actor; This run has no authenticated mailbox readback for the Pitcher account, so message body, recipient role, duration, timezone, reason, and CTA destination cannot be verified; No isolated session reschedule/cancellation, pitch promotion/agreement, or grant application/rejection event fixture is available; shared lifecycle records were not mutated; The four email-delivery findings are passed over without any claim that delivery or content is fixed"
+    },
+    {
+      "id": "PIT-F038",
+      "group": "Pitcher",
+      "scenarioId": "PIT-012",
+      "severity": "MEDIUM",
+      "title": "Fresh submission missing from Lifecycle history",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T08:30:43.588Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/pitch/6a9ebed3d26f574c91434a15?tab=11",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-038-submission-lifecycle/PIT-F038-submission-lifecycle.png",
+        "evidence/pitcher/PIT-038-submission-lifecycle/PIT-F038-result.json"
+      ],
+      "notes": "The deployed pitch API returned publicationSubmittedAt=2026-09-07T13:52:27.023Z; The read-only admin Lifecycle renders Pitch submitted with 7 Sept 2026, 6:52; The rendered source label is pitch.publicationSubmittedAt and the submission entry is not Unavailable; No pitch record was changed during this read-only retest"
+    },
+    {
+      "id": "PIT-F039",
+      "group": "Pitcher",
+      "scenarioId": "PIT-014",
+      "severity": "MEDIUM",
+      "title": "Return clears public pitch search",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T08:10:44.977Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/pitches",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-039/PIT-F039-return-search-pass.png",
+        "evidence/pitcher/PIT-039/PIT-F039-result.json"
+      ],
+      "notes": "The exact deployed pitch title reduced the public directory to the expected result; Pressing Return preserved the exact query in the search control; The expected single filtered pitch remained visible after Return"
+    },
+    {
+      "id": "PIT-F040",
+      "group": "Pitcher",
+      "scenarioId": "PIT-009 / PIT-012",
+      "severity": "LOW",
+      "title": "Corrected form values retain stale error summaries",
+      "status": "PASS",
+      "disposition": "VERIFIED_FIXED_DEPLOYED",
+      "testedAt": "2026-09-18T07:40:14.324Z",
+      "browser": "Chrome",
+      "viewport": "1792x976",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/create-pitch",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-009-PIT-012/PIT-F040-validation-recovery.png",
+        "evidence/pitcher/PIT-009-PIT-012/PIT-F040-result.json"
+      ],
+      "notes": "Correcting the deployed title immediately removes it from the validation summary and clears its helper error; Correcting the deployed Profit Distribution frequency immediately removes the stale modal error; The flow stopped before confirmation or pitch creation; no record was submitted"
+    },
+    {
+      "id": "PIT-F041",
+      "group": "Pitcher",
+      "scenarioId": "PIT-022 / PIT-027 / PIT-033",
+      "severity": "MEDIUM",
+      "title": "Project bid table clips decision actions at 1024",
+      "status": "PASSED_OVER",
+      "disposition": "FIXTURE_PRECONDITION_UNAVAILABLE",
+      "testedAt": "2026-09-18T07:57:07.266Z",
+      "browser": "Chrome",
+      "viewport": "1024x768",
+      "targetUrl": "https://auth-35306705473-1-dot-planar-truck-361704.uc.r.appspot.com/project/63d993b83f6f4af93536d2ee?id=63d993b83f6f4af93536d2ee&tab=3",
+      "apiUrl": "https://cicdevapi.uc.r.appspot.com",
+      "evidence": [
+        "evidence/pitcher/PIT-041/PIT-F041-1024-no-pending-bid-actions.png",
+        "evidence/pitcher/PIT-041/PIT-F041-result.json"
+      ],
+      "notes": "The deployed 1024px project Bids view rendered 1 Accepted and 1 Expired status entries; No pending bid exposed an Accept or Reject decision action; The reported action-clipping defect cannot be proven fixed without a pending owner-decision bid; no bid state was mutated"
+    }
+  ]
+}
